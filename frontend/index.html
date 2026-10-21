@@ -1,0 +1,1219 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#123c69" />
+    <title>University Portal — Secure Login</title>
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="manifest" href="site.webmanifest" />
+    <link rel="stylesheet" href="style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    />
+  </head>
+  <body>
+    <a class="skip-link" href="#mainContent">Skip to main content</a>
+
+    <!-- ===== LOADING OVERLAY ===== -->
+    <div
+      id="loadingOverlay"
+      class="loading-overlay hidden"
+      role="status"
+      aria-label="Loading"
+      aria-live="polite"
+    >
+      <div class="spinner"></div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+
+    <!-- ===== AUTH WRAPPER ===== -->
+    <div id="authWrapper" class="auth-wrapper">
+      <!-- BACKGROUND PARTICLES -->
+      <div class="bg-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+
+      <!-- ===== LOGIN SCREEN ===== -->
+      <div id="loginScreen" class="auth-card active">
+        <div class="auth-header">
+          <div
+            class="university-logo login-logo"
+            aria-label="IILM University logo"
+          >
+            <i class="fas fa-graduation-cap"></i>
+            <img src="iilm-logo-main-1024x341.png" alt="IILM University" />
+          </div>
+          <h1>University Portal</h1>
+          <p>Secure access for the IILM community</p>
+        </div>
+        <form id="loginForm" class="auth-form" novalidate>
+          <div class="form-group">
+            <label for="studentId"
+              ><i class="fas fa-id-card"></i> Student / Faculty ID</label
+            >
+            <input
+              type="text"
+              id="studentId"
+              placeholder="e.g. STU2024001"
+              autocomplete="username"
+              required
+            />
+          </div>
+          <div class="form-group">
+            <label for="password"><i class="fas fa-lock"></i> Password</label>
+            <div class="input-eye">
+              <input
+                type="password"
+                id="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+                required
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                onclick="togglePassword('password')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="checkbox-label"
+              ><input type="checkbox" id="rememberMe" /> Remember me</label
+            >
+            <a
+              href="#"
+              class="link-text"
+              onclick="
+                showScreen('forgotPasswordScreen');
+                return false;
+              "
+              >Forgot password?</a
+            >
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <i class="fas fa-sign-in-alt"></i> Continue
+          </button>
+        </form>
+        <div class="auth-footer">
+          <p>Student accounts are created by the administrator.</p>
+        </div>
+        <div class="security-badge">
+          <i class="fas fa-shield-alt"></i> 256-bit SSL Encrypted
+        </div>
+      </div>
+
+      <!-- ===== FORGOT PASSWORD SCREEN ===== -->
+      <div id="forgotPasswordScreen" class="auth-card">
+        <div class="auth-header">
+          <div class="university-logo otp-icon"><i class="fas fa-key"></i></div>
+          <h1>Reset Password</h1>
+          <p>Get a secure reset link by email</p>
+        </div>
+        <form id="forgotPasswordForm" class="auth-form" novalidate>
+          <div class="form-group">
+            <label
+              ><i class="fas fa-envelope"></i> Registered education email</label
+            >
+            <input
+              type="email"
+              id="forgotEmail"
+              placeholder="student@iilm.edu"
+              autocomplete="email"
+              required
+            />
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <i class="fas fa-paper-plane"></i> Send Reset Link
+          </button>
+        </form>
+        <button class="btn-back" onclick="showScreen('loginScreen')">
+          <i class="fas fa-arrow-left"></i> Back to Login
+        </button>
+      </div>
+
+      <!-- ===== RESET PASSWORD SCREEN ===== -->
+      <div id="resetPasswordScreen" class="auth-card">
+        <div class="auth-header">
+          <div class="university-logo reg-icon">
+            <i class="fas fa-lock-open"></i>
+          </div>
+          <h1>Choose a New Password</h1>
+          <p>Set a secure password for your university account</p>
+        </div>
+        <form id="resetPasswordForm" class="auth-form" novalidate>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> New Password</label>
+            <div class="input-eye">
+              <input
+                type="password"
+                id="resetPassword"
+                placeholder="12+ chars, upper/lower/number/symbol"
+                autocomplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                onclick="togglePassword('resetPassword')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Confirm Password</label>
+            <div class="input-eye">
+              <input
+                type="password"
+                id="resetConfirmPassword"
+                placeholder="Repeat password"
+                autocomplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                onclick="togglePassword('resetConfirmPassword')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <i class="fas fa-check-circle"></i> Update Password
+          </button>
+        </form>
+        <button class="btn-back" onclick="showScreen('loginScreen')">
+          <i class="fas fa-arrow-left"></i> Back to Login
+        </button>
+      </div>
+
+      <!-- ===== OTP SCREEN ===== -->
+      <div id="otpScreen" class="auth-card">
+        <div class="auth-header">
+          <div class="university-logo otp-icon">
+            <i class="fas fa-envelope-open-text"></i>
+          </div>
+          <span class="brand-kicker">IILM UNIVERSITY</span>
+          <h1>Email Verification</h1>
+          <p id="otpSubtitle">Enter the 6-digit OTP sent to your email</p>
+        </div>
+        <form id="otpForm" class="auth-form" autocomplete="off" novalidate>
+          <div class="otp-inputs">
+            <input
+              type="text"
+              class="otp-box"
+              name="otp-digit-1"
+              autocomplete="off"
+              maxlength="1"
+              inputmode="numeric"
+              pattern="[0-9]"
+            />
+            <input
+              type="text"
+              class="otp-box"
+              name="otp-digit-2"
+              autocomplete="off"
+              maxlength="1"
+              inputmode="numeric"
+              pattern="[0-9]"
+            />
+            <input
+              type="text"
+              class="otp-box"
+              name="otp-digit-3"
+              autocomplete="off"
+              maxlength="1"
+              inputmode="numeric"
+              pattern="[0-9]"
+            />
+            <input
+              type="text"
+              class="otp-box"
+              name="otp-digit-4"
+              autocomplete="off"
+              maxlength="1"
+              inputmode="numeric"
+              pattern="[0-9]"
+            />
+            <input
+              type="text"
+              class="otp-box"
+              name="otp-digit-5"
+              autocomplete="off"
+              maxlength="1"
+              inputmode="numeric"
+              pattern="[0-9]"
+            />
+            <input
+              type="text"
+              class="otp-box"
+              name="otp-digit-6"
+              autocomplete="off"
+              maxlength="1"
+              inputmode="numeric"
+              pattern="[0-9]"
+            />
+          </div>
+          <div class="otp-timer">
+            <span id="timerText"
+              >OTP expires in <strong id="countdown">05:00</strong></span
+            >
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <i class="fas fa-check-circle"></i> Verify OTP
+          </button>
+          <button
+            type="button"
+            id="resendBtn"
+            class="btn-ghost btn-full"
+            disabled
+            onclick="resendOTP()"
+          >
+            <i class="fas fa-redo"></i> Resend OTP (<span id="resendCountdown"
+              >60</span
+            >s)
+          </button>
+        </form>
+        <button class="btn-back" onclick="showScreen('loginScreen')">
+          <i class="fas fa-arrow-left"></i> Back to Login
+        </button>
+      </div>
+
+      <!-- ===== BIOMETRIC SCREEN ===== -->
+      <div id="biometricScreen" class="auth-card">
+        <div class="auth-header">
+          <div class="university-logo bio-icon">
+            <i class="fas fa-fingerprint"></i>
+          </div>
+          <span class="brand-kicker">IILM UNIVERSITY</span>
+          <h1>Biometric Verification</h1>
+          <p>Authenticate using your registered biometric</p>
+        </div>
+        <div class="biometric-area">
+          <div class="fingerprint-ring" id="fingerprintRing">
+            <div class="fingerprint-inner">
+              <i class="fas fa-fingerprint" id="fpIcon"></i>
+            </div>
+          </div>
+          <p id="bioStatus" class="bio-status">
+            Tap to authenticate with biometric
+          </p>
+        </div>
+        <div class="auth-form">
+          <button
+            type="button"
+            class="btn-primary btn-full"
+            onclick="startBiometric()"
+          >
+            <i class="fas fa-fingerprint"></i> Authenticate with Biometric
+          </button>
+          <button
+            type="button"
+            class="btn-ghost btn-full"
+            onclick="showScreen('otpScreen')"
+          >
+            <i class="fas fa-envelope"></i> Use OTP Instead
+          </button>
+          <form id="recoveryCodeForm" class="recovery-form" novalidate>
+            <label for="recoveryCode">Lost your biometric device?</label>
+            <div class="recovery-row">
+              <input
+                id="recoveryCode"
+                autocomplete="one-time-code"
+                placeholder="Recovery code"
+              />
+              <button type="submit" class="btn-ghost btn-small">
+                Use code
+              </button>
+            </div>
+          </form>
+        </div>
+        <button class="btn-back" onclick="showScreen('loginScreen')">
+          <i class="fas fa-arrow-left"></i> Back to Login
+        </button>
+      </div>
+
+      <!-- ===== REGISTER SCREEN ===== -->
+      <div id="registerScreen" class="auth-card register-card">
+        <div class="auth-header">
+          <div class="university-logo reg-icon">
+            <i class="fas fa-user-plus"></i>
+          </div>
+          <span class="brand-kicker">IILM UNIVERSITY</span>
+          <h1>Create Account</h1>
+          <p>Register for University Portal</p>
+        </div>
+        <form id="registerForm" class="auth-form" novalidate>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label><i class="fas fa-id-badge"></i> Student ID</label>
+              <input
+                type="text"
+                id="regStudentId"
+                placeholder="STU2024001"
+                required
+              />
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-user"></i> Full Name</label>
+              <input
+                type="text"
+                id="regFullName"
+                placeholder="Your full name"
+                required
+              />
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-envelope"></i> University Email</label>
+            <input
+              type="email"
+              id="regEmail"
+              placeholder="student@iilm.edu"
+              required
+            />
+          </div>
+          <div class="form-row-2">
+            <div class="form-group">
+              <label><i class="fas fa-building"></i> Department</label>
+              <select id="regDepartment" required>
+                <option value="">Select Department</option>
+                <option>Computer Science</option>
+                <option>Electrical Engineering</option>
+                <option>Business Administration</option>
+                <option>Mathematics</option>
+                <option>Physics</option>
+                <option>Civil Engineering</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label><i class="fas fa-layer-group"></i> Semester</label>
+              <select id="regSemester" required>
+                <option value="">Semester</option>
+                <option value="1">1st</option>
+                <option value="2">2nd</option>
+                <option value="3">3rd</option>
+                <option value="4">4th</option>
+                <option value="5">5th</option>
+                <option value="6">6th</option>
+                <option value="7">7th</option>
+                <option value="8">8th</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Password</label>
+            <div class="input-eye">
+              <input
+                type="password"
+                id="regPassword"
+                placeholder="12+ chars, upper/lower/number/symbol"
+                required
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                onclick="togglePassword('regPassword')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+            <div class="password-strength" id="passwordStrength"></div>
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-lock"></i> Confirm Password</label>
+            <div class="input-eye">
+              <input
+                type="password"
+                id="regConfirmPassword"
+                placeholder="Repeat password"
+                required
+              />
+              <button
+                type="button"
+                class="eye-btn"
+                onclick="togglePassword('regConfirmPassword')"
+              >
+                <i class="fas fa-eye"></i>
+              </button>
+            </div>
+          </div>
+          <button type="submit" class="btn-primary btn-full">
+            <i class="fas fa-user-plus"></i> Create Account
+          </button>
+        </form>
+        <div class="auth-footer">
+          <p>
+            Already registered?
+            <a href="#" onclick="showScreen('loginScreen')" class="link-text"
+              >Login here</a
+            >
+          </p>
+        </div>
+      </div>
+    </div>
+    <!-- END AUTH WRAPPER -->
+
+    <!-- ===== DASHBOARD ===== -->
+    <div id="dashboard" class="dashboard hidden">
+      <!-- SIDEBAR -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+          <i class="fas fa-graduation-cap"></i>
+          <span>IILM University</span>
+        </div>
+        <nav class="sidebar-nav">
+          <a
+            href="#"
+            class="nav-item student-only active"
+            onclick="showTab('tabDashboard', this)"
+          >
+            <i class="fas fa-th-large"></i><span>Dashboard</span>
+          </a>
+          <a
+            href="#"
+            class="nav-item student-only"
+            onclick="showTab('tabCourses', this)"
+          >
+            <i class="fas fa-book-open"></i><span>My Courses</span>
+          </a>
+          <a
+            href="#"
+            class="nav-item student-only"
+            onclick="showTab('tabAttendance', this)"
+          >
+            <i class="fas fa-calendar-check"></i><span>Attendance</span>
+          </a>
+          <a
+            href="#"
+            class="nav-item student-only"
+            onclick="showTab('tabAcademic', this)"
+          >
+            <i class="fas fa-calendar-alt"></i><span>Academic Hub</span>
+          </a>
+          <a
+            href="#"
+            class="nav-item student-only"
+            onclick="showTab('tabAnnouncements', this)"
+          >
+            <i class="fas fa-bullhorn"></i><span>Announcements</span>
+          </a>
+          <a
+            href="#"
+            class="nav-item student-only"
+            onclick="showTab('tabSecurity', this)"
+          >
+            <i class="fas fa-shield-alt"></i><span>Security</span>
+          </a>
+          <a
+            href="#"
+            id="adminNavItem"
+            class="nav-item hidden"
+            onclick="showTab('tabAdmin', this)"
+          >
+            <i class="fas fa-user-shield"></i><span>Admin Portal</span>
+          </a>
+          <a
+            href="#"
+            id="facultyNavItem"
+            class="nav-item hidden"
+            onclick="showTab('tabFaculty', this)"
+          >
+            <i class="fas fa-chalkboard-teacher"></i
+            ><span>Faculty Workspace</span>
+          </a>
+        </nav>
+        <div class="sidebar-bottom">
+          <button class="btn-logout" onclick="logout()">
+            <i class="fas fa-sign-out-alt"></i><span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      <!-- MAIN CONTENT -->
+      <main class="main-content" id="mainContent" tabindex="-1">
+        <!-- TOP BAR -->
+        <header class="topbar">
+          <button class="menu-toggle" onclick="toggleSidebar()">
+            <i class="fas fa-bars"></i>
+          </button>
+          <div class="topbar-title" id="topbarTitle">Dashboard</div>
+          <div class="topbar-right">
+            <button
+              id="darkModeToggle"
+              class="icon-btn"
+              onclick="toggleDarkMode()"
+              title="Toggle dark mode"
+            >
+              <i class="fas fa-moon"></i>
+            </button>
+            <div class="notif-wrapper">
+              <button
+                id="notifBtn"
+                class="icon-btn"
+                onclick="toggleNotifPanel()"
+                title="Notifications"
+              >
+                <i class="fas fa-bell"></i>
+                <span id="notifBadge" class="notif-badge hidden">0</span>
+              </button>
+              <div id="notifPanel" class="notif-panel">
+                <div class="notif-header">
+                  <span>Notifications</span>
+                  <button
+                    class="btn-ghost btn-small"
+                    onclick="markAllNotifsRead()"
+                  >
+                    Mark all read
+                  </button>
+                </div>
+                <div id="notifList" class="notif-list"></div>
+              </div>
+            </div>
+            <div class="user-avatar" id="userAvatar">
+              <i class="fas fa-user-circle"></i>
+            </div>
+            <div class="user-info">
+              <span id="dashUserName">Loading...</span>
+              <small id="dashUserRole">Student</small>
+            </div>
+          </div>
+        </header>
+
+        <!-- TAB: DASHBOARD -->
+        <section id="tabDashboard" class="tab-content student-only active">
+          <div class="welcome-banner">
+            <div>
+              <h2>Welcome back, <span id="welcomeName">Student</span>! 👋</h2>
+              <p>Your academic life, organised in one secure place.</p>
+            </div>
+            <div class="mfa-badge">
+              <i class="fas fa-shield-check"></i> MFA Secured
+            </div>
+          </div>
+
+          <div class="stats-grid">
+            <div class="stat-card blue">
+              <div class="stat-icon"><i class="fas fa-star"></i></div>
+              <div class="stat-info">
+                <span id="statCGPA">3.6</span><label>CGPA</label>
+              </div>
+            </div>
+            <div class="stat-card green">
+              <div class="stat-icon"><i class="fas fa-book"></i></div>
+              <div class="stat-info">
+                <span id="statCredits">12</span><label>Credits This Sem</label>
+              </div>
+            </div>
+            <div class="stat-card purple">
+              <div class="stat-icon"><i class="fas fa-trophy"></i></div>
+              <div class="stat-info">
+                <span id="statRank">5</span><label>Semester Rank</label>
+              </div>
+            </div>
+            <div class="stat-card orange">
+              <div class="stat-icon"><i class="fas fa-check-circle"></i></div>
+              <div class="stat-info">
+                <span id="statCompleted">90</span
+                ><label>Credits Completed</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-book-open"></i> Enrolled Courses</h3>
+              </div>
+              <div id="dashCourses" class="course-list"></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-bullhorn"></i> Announcements</h3>
+              </div>
+              <div id="dashAnnouncements" class="announcement-list"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: COURSES -->
+        <section id="tabCourses" class="tab-content student-only">
+          <div class="page-header">
+            <h2><i class="fas fa-book-open"></i> My Courses</h2>
+            <p>Search the courses currently assigned to you.</p>
+          </div>
+          <label class="sr-only" for="courseSearch">Search courses</label>
+          <input
+            id="courseSearch"
+            class="content-search"
+            type="search"
+            placeholder="Search by course name, code or instructor"
+          />
+          <div id="coursesGrid" class="courses-grid"></div>
+        </section>
+
+        <!-- TAB: ATTENDANCE -->
+        <section id="tabAttendance" class="tab-content student-only">
+          <div class="page-header">
+            <h2><i class="fas fa-calendar-check"></i> Attendance Record</h2>
+          </div>
+          <div id="attendanceList" class="attendance-list"></div>
+        </section>
+
+        <section id="tabAcademic" class="tab-content student-only">
+          <div class="page-header">
+            <h2><i class="fas fa-calendar-alt"></i> Academic Hub</h2>
+            <p>Your timetable, deadlines, fee status, and report downloads.</p>
+          </div>
+          <div class="academic-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-clock"></i> Timetable</h3>
+              </div>
+              <div id="timetableList" class="academic-list"></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-tasks"></i> Upcoming deadlines</h3>
+              </div>
+              <div id="assignmentsList" class="academic-list"></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-receipt"></i> Fee status</h3>
+              </div>
+              <div id="feeStatus" class="academic-list"></div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-file-download"></i> Official records</h3>
+              </div>
+              <div class="academic-list">
+                <p class="form-hint">
+                  Download a CSV grade report for your records.
+                </p>
+                <button class="btn-primary" onclick="downloadGradeReport()">
+                  <i class="fas fa-download"></i> Download grade report
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- TAB: ANNOUNCEMENTS -->
+        <section id="tabAnnouncements" class="tab-content student-only">
+          <div class="page-header">
+            <h2><i class="fas fa-bullhorn"></i> All Announcements</h2>
+          </div>
+          <div id="announcementsFull" class="announcements-full"></div>
+        </section>
+
+        <!-- TAB: SECURITY -->
+        <section id="tabSecurity" class="tab-content student-only">
+          <div class="page-header">
+            <h2><i class="fas fa-shield-alt"></i> Security Settings</h2>
+          </div>
+          <div class="security-grid">
+            <div class="card security-card">
+              <div class="security-card-header">
+                <div class="security-icon bio">
+                  <i class="fas fa-fingerprint"></i>
+                </div>
+                <div>
+                  <h3>Biometric Authentication</h3>
+                  <p>Use fingerprint or Face ID for faster login</p>
+                </div>
+                <div id="bioToggle" class="status-badge disabled">Disabled</div>
+              </div>
+              <div class="security-card-body">
+                <p id="bioDescription">
+                  Register your biometric to enable faster and more secure login
+                  after OTP verification.
+                </p>
+                <button
+                  id="biometricBtn"
+                  class="btn-primary"
+                  onclick="manageBiometric()"
+                >
+                  <i class="fas fa-fingerprint"></i>
+                  <span id="biometricBtnText">Enable Biometric</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="card security-card">
+              <div class="security-card-header">
+                <div class="security-icon otp">
+                  <i class="fas fa-envelope-open-text"></i>
+                </div>
+                <div>
+                  <h3>Email OTP Verification</h3>
+                  <p>One-time password sent to your email</p>
+                </div>
+                <div class="status-badge enabled">Active</div>
+              </div>
+              <div class="security-card-body">
+                <p>
+                  Email OTP is always required as the first MFA step. OTPs
+                  expire in 5 minutes.
+                </p>
+              </div>
+            </div>
+
+            <div class="card security-card">
+              <div class="security-card-header">
+                <div class="security-icon info">
+                  <i class="fas fa-info-circle"></i>
+                </div>
+                <div>
+                  <h3>Account Information</h3>
+                  <p>Your login and security details</p>
+                </div>
+              </div>
+              <div class="security-card-body">
+                <div class="info-row">
+                  <span>Last Login</span><strong id="lastLoginInfo">—</strong>
+                </div>
+                <div class="info-row">
+                  <span>Student ID</span><strong id="secStudentId">—</strong>
+                </div>
+                <div class="info-row">
+                  <span>Email</span><strong id="secEmail">—</strong>
+                </div>
+                <div class="info-row">
+                  <span>Email Verified</span
+                  ><strong id="verifiedStatus">—</strong>
+                </div>
+                <div class="info-row">
+                  <span>MFA Status</span
+                  ><strong class="text-green">Active</strong>
+                </div>
+                <div style="margin-top: 12px">
+                  <button
+                    id="sendVerifyBtn"
+                    class="btn-ghost"
+                    onclick="sendVerificationEmail()"
+                  >
+                    <i class="fas fa-envelope"></i> Send Verification Email
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="card security-card">
+              <div class="security-card-header">
+                <div
+                  class="security-icon info"
+                  style="background: linear-gradient(135deg, #6a1b9a, #9c27b0)"
+                >
+                  <i class="fas fa-desktop"></i>
+                </div>
+                <div>
+                  <h3>Active Sessions</h3>
+                  <p>Devices currently signed in to your account</p>
+                </div>
+              </div>
+              <div class="security-card-body">
+                <div id="sessionsList">
+                  <p class="form-hint">Loading sessions...</p>
+                </div>
+                <button
+                  id="signOutOthersBtn"
+                  class="btn-ghost btn-small"
+                  onclick="signOutOtherSessions()"
+                >
+                  <i class="fas fa-sign-out-alt"></i> Sign out of all other
+                  devices
+                </button>
+              </div>
+            </div>
+
+            <div class="card security-card">
+              <div class="security-card-header">
+                <div
+                  class="security-icon info"
+                  style="background: linear-gradient(135deg, #5d4037, #8d6e63)"
+                >
+                  <i class="fas fa-key"></i>
+                </div>
+                <div>
+                  <h3>Recovery Codes</h3>
+                  <p>
+                    Use one code if you lose access to your biometric device.
+                  </p>
+                </div>
+              </div>
+              <div class="security-card-body">
+                <p id="recoveryCodeStatus" class="form-hint">
+                  Loading recovery-code status...
+                </p>
+                <button class="btn-ghost" onclick="generateRecoveryCodes()">
+                  <i class="fas fa-shield-alt"></i> Generate new codes
+                </button>
+                <div
+                  id="recoveryCodesResult"
+                  class="recovery-codes hidden"
+                ></div>
+              </div>
+            </div>
+
+            <div class="card security-card">
+              <div class="security-card-header">
+                <div
+                  class="security-icon info"
+                  style="background: linear-gradient(135deg, #00695c, #00897b)"
+                >
+                  <i class="fas fa-user-edit"></i>
+                </div>
+                <div>
+                  <h3>Profile</h3>
+                  <p>Update your display name and photo</p>
+                </div>
+              </div>
+              <div class="security-card-body">
+                <div class="form-group">
+                  <label><i class="fas fa-user"></i> Full Name</label>
+                  <input
+                    type="text"
+                    id="profileFullName"
+                    placeholder="Your full name"
+                  />
+                </div>
+                <div class="form-group">
+                  <label><i class="fas fa-image"></i> Profile Photo</label>
+                  <input
+                    type="file"
+                    id="profileImageInput"
+                    accept="image/jpeg,image/png,image/webp"
+                    style="font-size: 13px"
+                  />
+                  <img
+                    id="profilePreview"
+                    class="hidden"
+                    alt="Preview"
+                    style="
+                      width: 72px;
+                      height: 72px;
+                      border-radius: 50%;
+                      object-fit: cover;
+                      margin-top: 8px;
+                      border: 2px solid var(--border);
+                    "
+                  />
+                </div>
+                <button
+                  id="saveProfileBtn"
+                  class="btn-primary hidden"
+                  onclick="saveProfile()"
+                >
+                  <i class="fas fa-save"></i> Save Profile
+                </button>
+                <button
+                  class="btn-ghost"
+                  onclick="
+                    $('saveProfileBtn').classList.remove('hidden');
+                    $('profileFullName').value = currentUser?.fullName || '';
+                  "
+                >
+                  <i class="fas fa-edit"></i> Edit Profile
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="tabFaculty" class="tab-content">
+          <div class="page-header">
+            <span class="section-kicker">IILM UNIVERSITY</span>
+            <h2><i class="fas fa-chalkboard-teacher"></i> Faculty Workspace</h2>
+            <p>Review your course rosters and keep student records current.</p>
+          </div>
+          <div id="facultyCourses" class="faculty-courses"></div>
+        </section>
+
+        <!-- TAB: ADMIN -->
+        <section id="tabAdmin" class="tab-content">
+          <div class="page-header">
+            <span class="section-kicker">IILM UNIVERSITY</span>
+            <h2><i class="fas fa-user-shield"></i> Admin Portal</h2>
+            <p>Manage student access, announcements, and security.</p>
+          </div>
+
+          <div
+            id="securityOverview"
+            class="sec-overview-grid"
+            style="margin-bottom: 24px"
+          >
+            <div class="sec-metric-card">
+              <div class="sec-metric-val" id="secMetricUsers">-</div>
+              <div class="sec-metric-label">Total Users</div>
+            </div>
+            <div class="sec-metric-card">
+              <div class="sec-metric-val" id="secMetricActive">-</div>
+              <div class="sec-metric-label">Active Sessions</div>
+            </div>
+            <div class="sec-metric-card success">
+              <div class="sec-metric-val" id="secMetricLogins">-</div>
+              <div class="sec-metric-label">Logins (30d)</div>
+            </div>
+            <div class="sec-metric-card danger">
+              <div class="sec-metric-val" id="secMetricFailed">-</div>
+              <div class="sec-metric-label">Failed Logins</div>
+            </div>
+            <div class="sec-metric-card warning">
+              <div class="sec-metric-val" id="secMetricLocked">-</div>
+              <div class="sec-metric-label">Locked Accounts</div>
+            </div>
+            <div class="sec-metric-card warning">
+              <div class="sec-metric-val" id="secMetricSuspicious">-</div>
+              <div class="sec-metric-label">Suspicious Logins</div>
+            </div>
+          </div>
+
+          <div class="admin-grid">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-user-plus"></i> Add Student Account</h3>
+                <span class="admin-card-note">Assign portal access</span>
+              </div>
+              <form
+                id="adminStudentForm"
+                class="auth-form admin-form"
+                novalidate
+              >
+                <label
+                  >Student ID<input
+                    id="adminStudentId"
+                    placeholder="e.g. STU2026001"
+                    required
+                /></label>
+                <label
+                  >Full name<input
+                    id="adminFullName"
+                    placeholder="Student full name"
+                    required
+                /></label>
+                <label
+                  >Education email<input
+                    id="adminEmail"
+                    type="email"
+                    placeholder="student@iilm.edu"
+                    required
+                /></label>
+                <label
+                  >Department<select id="adminDepartment" required>
+                    <option value="">Select department</option>
+                    <option>Computer Science</option>
+                    <option>Electrical Engineering</option>
+                    <option>Business Administration</option>
+                    <option>Mathematics</option>
+                    <option>Physics</option>
+                    <option>Civil Engineering</option>
+                  </select></label
+                >
+                <label
+                  >Semester<select id="adminSemester" required>
+                    <option value="">Select semester</option>
+                    <option value="1">Semester 1</option>
+                    <option value="2">Semester 2</option>
+                    <option value="3">Semester 3</option>
+                    <option value="4">Semester 4</option>
+                    <option value="5">Semester 5</option>
+                    <option value="6">Semester 6</option>
+                    <option value="7">Semester 7</option>
+                    <option value="8">Semester 8</option>
+                  </select></label
+                >
+                <label
+                  >Temporary password<input
+                    id="adminPassword"
+                    type="password"
+                    placeholder="12+ chars"
+                    required
+                /></label>
+                <div
+                  id="adminStatus"
+                  class="admin-status"
+                  aria-live="polite"
+                ></div>
+                <button
+                  id="adminCreateButton"
+                  type="submit"
+                  class="btn-primary"
+                >
+                  <i class="fas fa-user-plus"></i> Create Student
+                </button>
+              </form>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-users"></i> Student Accounts</h3>
+              </div>
+              <div style="padding: 12px 16px 0">
+                <input
+                  id="adminSearch"
+                  type="text"
+                  placeholder="Search by name, ID or email..."
+                  style="
+                    width: 100%;
+                    padding: 9px 12px;
+                    border: 1.5px solid var(--border);
+                    border-radius: 8px;
+                    font-size: 13px;
+                    background: var(--card);
+                    color: var(--text);
+                  "
+                  oninput="loadAdminStudents(1)"
+                />
+              </div>
+              <div
+                id="adminStudentsList"
+                class="admin-students-list"
+                style="padding: 12px 16px"
+              ></div>
+              <div
+                id="adminPagination"
+                style="
+                  display: flex;
+                  align-items: center;
+                  gap: 10px;
+                  padding: 8px 16px;
+                  justify-content: center;
+                "
+              ></div>
+            </div>
+          </div>
+
+          <div class="admin-grid" style="margin-top: 20px">
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-bullhorn"></i> Post Announcement</h3>
+              </div>
+              <form
+                id="announcementForm"
+                class="auth-form admin-form"
+                style="padding: 16px"
+                novalidate
+              >
+                <label
+                  >Title<input
+                    id="annTitle"
+                    placeholder="Announcement title"
+                    required
+                /></label>
+                <label
+                  >Body<textarea
+                    id="annBody"
+                    rows="3"
+                    placeholder="Details..."
+                    style="
+                      padding: 10px 12px;
+                      border: 1.5px solid var(--border);
+                      border-radius: 8px;
+                      font-size: 13px;
+                      resize: vertical;
+                      background: var(--card);
+                      color: var(--text);
+                      font-family: inherit;
+                    "
+                    required
+                  ></textarea>
+                </label>
+                <label
+                  >Priority<select id="annPriority">
+                    <option value="medium">Medium</option>
+                    <option value="high">High</option>
+                    <option value="low">Low</option>
+                  </select></label
+                >
+                <div
+                  style="
+                    font-size: 12px;
+                    font-weight: 600;
+                    color: var(--text);
+                    margin-bottom: 4px;
+                  "
+                >
+                  Target Audience
+                </div>
+                <div
+                  style="
+                    display: flex;
+                    gap: 12px;
+                    flex-wrap: wrap;
+                    font-size: 13px;
+                  "
+                >
+                  <label
+                    style="flex-direction: row; align-items: center; gap: 6px"
+                    ><input
+                      type="checkbox"
+                      class="ann-role-check"
+                      value="all"
+                    />
+                    Everyone</label
+                  >
+                  <label
+                    style="flex-direction: row; align-items: center; gap: 6px"
+                    ><input
+                      type="checkbox"
+                      class="ann-role-check"
+                      value="student"
+                    />
+                    Students</label
+                  >
+                  <label
+                    style="flex-direction: row; align-items: center; gap: 6px"
+                    ><input
+                      type="checkbox"
+                      class="ann-role-check"
+                      value="faculty"
+                    />
+                    Faculty</label
+                  >
+                </div>
+                <button type="submit" class="btn-primary">
+                  <i class="fas fa-paper-plane"></i> Post Announcement
+                </button>
+              </form>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-list"></i> Recent Announcements</h3>
+              </div>
+              <div
+                id="adminAnnouncementsList"
+                class="admin-students-list"
+                style="padding: 12px 16px"
+              ></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 20px">
+            <div class="card-header card-header-actions">
+              <h3><i class="fas fa-shield-alt"></i> Recent Security Events</h3>
+              <button
+                class="btn-ghost btn-small"
+                onclick="downloadSecurityLogs()"
+              >
+                <i class="fas fa-download"></i> Export CSV
+              </button>
+            </div>
+            <div id="secEventsList" style="padding: 12px 16px"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+    <!-- END DASHBOARD -->
+
+    <script src="app.js?v=20260912-2"></script>
+  </body>
+</html>

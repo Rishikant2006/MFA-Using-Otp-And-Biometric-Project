@@ -1,0 +1,21 @@
+# Dependencies and generated output
+**/node_modules/
+coverage/
+.nyc_output/
+
+# Secrets and local configuration
+.env
+**/.env
+!**/.env.example
+
+# Logs, cookies, and local data
+*.log
+*-cookies.txt
+backend/csrf-cookies.txt
+data/
+
+# Editors and operating systems
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

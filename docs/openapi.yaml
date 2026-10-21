@@ -1,0 +1,118 @@
+openapi: 3.0.3
+info:
+  title: IILM University Portal API
+  version: 2.0.0
+  description: Cookie-authenticated API. Obtain a CSRF token before state-changing browser requests.
+servers:
+  - url: http://localhost:5000/api
+paths:
+  /health:
+    get:
+      summary: Process health check
+      responses:
+        '200': { description: API is running }
+  /ready:
+    get:
+      summary: Database readiness check
+      responses:
+        '200': { description: Database connected }
+        '503': { description: Database unavailable }
+  /auth/csrf:
+    get:
+      summary: Issue or return the browser CSRF token
+      responses:
+        '200': { description: Token issued }
+  /auth/login:
+    post:
+      summary: Validate credentials and start MFA
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LoginRequest' }
+      responses:
+        '200': { description: OTP delivery initiated }
+        '401': { description: Invalid credentials }
+        '423': { description: Account temporarily locked }
+  /auth/otp/verify:
+    post:
+      summary: Verify email OTP
+      security: [{ csrfCookie: [] }]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { type: object, required: [otp], properties: { otp: { type: string, pattern: '^\\d{6}$' } } }
+      responses:
+        '200': { description: Access granted or WebAuthn challenge required }
+  /auth/webauthn/login/options:
+    post:
+      summary: Create a WebAuthn authentication challenge
+      security: [{ csrfCookie: [] }]
+      responses:
+        '200': { description: PublicKeyCredentialRequestOptions returned }
+  /auth/webauthn/login/verify:
+    post:
+      summary: Verify a WebAuthn assertion and create an access session
+      security: [{ csrfCookie: [] }]
+      responses:
+        '200': { description: Authentication complete }
+  /auth/recovery-codes/generate:
+    post:
+      summary: Replace and return eight single-use recovery codes
+      security: [{ csrfCookie: [] }]
+      responses:
+        '200': { description: Codes shown once }
+  /auth/recovery-codes/verify:
+    post:
+      summary: Complete the passkey MFA stage with a recovery code
+      security: [{ csrfCookie: [] }]
+      responses:
+        '200': { description: Authentication complete }
+  /auth/sessions:
+    get:
+      summary: List access sessions for the signed-in user
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200': { description: Sessions returned }
+    delete:
+      summary: Revoke every other signed-in device
+      security: [{ cookieAuth: [], csrfCookie: [] }]
+      responses:
+        '200': { description: Other sessions revoked }
+  /portal/academic:
+    get:
+      summary: Return timetable, assignments, and fee summary
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200': { description: Academic summary returned }
+  /portal/academic/grade-report:
+    get:
+      summary: Download a CSV grade report
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200': { description: CSV attachment }
+  /portal/faculty/courses:
+    get:
+      summary: Return assigned courses and student rosters
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200': { description: Faculty roster returned }
+        '403': { description: Faculty or administrator role required }
+  /admin/security/logs/export:
+    get:
+      summary: Export up to 10,000 filtered audit events as CSV
+      security: [{ cookieAuth: [] }]
+      responses:
+        '200': { description: CSV attachment }
+components:
+  securitySchemes:
+    cookieAuth: { type: apiKey, in: cookie, name: access_token }
+    csrfCookie: { type: apiKey, in: header, name: X-CSRF-Token }
+  schemas:
+    LoginRequest:
+      type: object
+      required: [studentId, password]
+      properties:
+        studentId: { type: string, example: STU2024001 }
+        password: { type: string, format: password }
