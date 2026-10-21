@@ -67,6 +67,8 @@ npm run format:check
 
 The tests cover security helpers, OTP generation, device labels, and an API health smoke test. GitHub Actions runs them for pushes and pull requests.
 
+ESLint and Prettier configuration lives at the repository root (`eslint.config.js`, `prettier.config.cjs`) so the backend and the browser bundle are checked with the same rules. The `lint` script fails on warnings, and `format:check` covers `backend/`, `frontend/`, and the root config files.
+
 ## Documentation
 
 - [OpenAPI contract](docs/openapi.yaml)

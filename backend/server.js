@@ -121,7 +121,10 @@ app.get('/api/ready', (_req, res) => {
 
 const path = require('path');
 app.use(express.static(path.join(__dirname, '..', 'frontend')));
-app.get('*', (req, res, next) => { if (req.path.startsWith('/api')) return next(); res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html')); });
+app.get('*', (req, res, next) => {
+  if (req.path.startsWith('/api')) return next();
+  res.sendFile(path.join(__dirname, '..', 'frontend', 'index.html'));
+});
 app.use((_req, res) => res.status(404).json({ success: false, message: 'Route not found.' }));
 
 app.use((err, req, res, _next) => {
